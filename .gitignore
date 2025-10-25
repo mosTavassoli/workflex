@@ -1,0 +1,20 @@
+# IDE
+.idea/
+*.iml
+
+# Node (frontend)
+workflex-ui/node_modules/
+workflex-ui/dist/
+workflex-ui/.env
+workflex-ui/.vite/
+
+# Java (backend)
+workflex-api/target/
+workflex-api/logs/
+workflex-api/.mvn/
+workflex-api/mvnw*
+workflex-api/.env
+
+# OS
+.DS_Store
+Thumbs.db
