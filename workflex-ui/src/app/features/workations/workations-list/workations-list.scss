@@ -9,19 +9,32 @@
     background-color: #f5f5f5;
   }
 
-  .chip {
-    display: inline-flex;
+  .risk-cell {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    border-radius: 16px;
+    gap: 8px;
     font-weight: 600;
-    font-size: 0.85rem;
     text-transform: capitalize;
-
-    .risk-icon {
-      width: 16px;
-      height: 16px;
-    }
+    font-size: 0.9rem;
   }
+
+  .risk-icon {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    object-fit: contain;
+  }
+
+  .high {
+    color: #e53935; // red text
+  }
+
+  .low {
+    color: #f9a825; // amber text
+  }
+
+  .no {
+    color: #43a047; // green text
+  }
+
 }
