@@ -1,0 +1,119 @@
+<div class="container">
+  <div class="overlay" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">
+    <ng-container matColumnDef="employee">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Employee</th>
+      <td mat-cell *matCellDef="let w">{{ w.employee }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="originCountry">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Origin</th>
+      <td mat-cell *matCellDef="let w" class="flag-cell">
+        <img [src]="flagUrl(w.originCountry)" class="flag" />
+        <span>{{ w.originCountry }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="destinationCountry">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination</th>
+      <td mat-cell *matCellDef="let w" class="flag-cell">
+        <img [src]="flagUrl(w.destinationCountry)" class="flag" />
+        <span>{{ w.destinationCountry }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="startDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Start</th>
+      <td mat-cell *matCellDef="let w">{{ w.startDate }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="endDate">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>End</th>
+      <td mat-cell *matCellDef="let w">{{ w.endDate }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="workingDays">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Days</th>
+      <td mat-cell *matCellDef="let w">{{ w.workingDays }}</td>
+    </ng-container>
+
+    <!-- Risk -->
+    <ng-container matColumnDef="riskLevel">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Risk</th>
+      <td mat-cell *matCellDef="let w">
+    <span class="chip" [ngClass]="riskClass(w.riskLevel)">
+      <img [src]="riskIcon(w.riskLevel)" alt="risk icon" class="risk-icon" />
+      {{ riskLabel(w.riskLevel) }}
+    </span>
+      </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+
+
+<!--<div class="container">-->
+<!--  @if (!loading) {-->
+<!--    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">-->
+
+<!--      <ng-container matColumnDef="employee">-->
+<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header>Employee</th>-->
+<!--        <td mat-cell *matCellDef="let w">{{ w.employee }}</td>-->
+<!--      </ng-container>-->
+
+<!--      &lt;!&ndash; Origin &ndash;&gt;-->
+<!--      <ng-container matColumnDef="originCountry">-->
+<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header>Origin</th>-->
+<!--        <td mat-cell *matCellDef="let w" class="flag-cell">-->
+<!--          <img [src]="flagUrl(w.originCountry)" alt="{{ w.originCountry }}" class="flag" />-->
+<!--          <span>{{ w.originCountry }}</span>-->
+<!--        </td>-->
+<!--      </ng-container>-->
+
+<!--      &lt;!&ndash; Destination &ndash;&gt;-->
+<!--      <ng-container matColumnDef="destinationCountry">-->
+<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header>Destination</th>-->
+<!--        <td mat-cell *matCellDef="let w" class="flag-cell">-->
+<!--          <img [src]="flagUrl(w.destinationCountry)" alt="{{ w.destinationCountry }}" class="flag" />-->
+<!--          <span>{{ w.destinationCountry }}</span>-->
+<!--        </td>-->
+<!--      </ng-container>-->
+
+
+<!--      <ng-container matColumnDef="startDate">-->
+<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header>Start</th>-->
+<!--        <td mat-cell *matCellDef="let w">{{ w.startDate }}</td>-->
+<!--      </ng-container>-->
+
+<!--      <ng-container matColumnDef="endDate">-->
+<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header>End</th>-->
+<!--        <td mat-cell *matCellDef="let w">{{ w.endDate }}</td>-->
+<!--      </ng-container>-->
+
+<!--      <ng-container matColumnDef="workingDays">-->
+<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header>Days</th>-->
+<!--        <td mat-cell *matCellDef="let w">{{ w.workingDays }}</td>-->
+<!--      </ng-container>-->
+
+<!--      <ng-container matColumnDef="riskLevel">-->
+<!--        <th mat-header-cell *matHeaderCellDef mat-sort-header>Risk</th>-->
+<!--        <td mat-cell *matCellDef="let w">-->
+<!--          <span class="chip" [ngClass]="riskClass(w.riskLevel)">-->
+<!--            {{ riskLabel(w.riskLevel) }}-->
+<!--          </span>-->
+<!--        </td>-->
+<!--      </ng-container>-->
+
+<!--      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>-->
+<!--      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>-->
+<!--    </table>-->
+<!--  } @else {-->
+<!--    <mat-spinner></mat-spinner>-->
+<!--  }-->
+<!--</div>-->
