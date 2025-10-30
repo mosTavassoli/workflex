@@ -20,8 +20,11 @@ import lombok.NoArgsConstructor;
 public class Workation {
 
     @Id
-    @Column(name = "id", nullable = false, updatable = false)
-    private String id; // CSV: workationId
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "workation_id", nullable = false, unique = true)
+    private String workationId;
 
     private String employee;
 

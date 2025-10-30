@@ -8,7 +8,8 @@ import java.time.LocalDate;
 
 @Data
 public class WorkationDto {
-    private String id;
+    private Long id;
+    private String workationId;
     private String employee;
     private String originCountry;
     private String destinationCountry;

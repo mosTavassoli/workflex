@@ -66,7 +66,7 @@ class WorkationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", is("1")))
+                .andExpect(jsonPath("$[0].workationId", is("1")))
                 .andExpect(jsonPath("$[0].employee", is("John Doe")))
                 .andExpect(jsonPath("$[0].originCountry", is("Germany")))
                 .andExpect(jsonPath("$[0].destinationCountry", is("Spain")))
@@ -74,7 +74,7 @@ class WorkationControllerTest {
                 .andExpect(jsonPath("$[0].endDate", is("30/01/2024")))
                 .andExpect(jsonPath("$[0].workingDays", is(10)))
                 .andExpect(jsonPath("$[0].riskLevel", is("NO")))
-                .andExpect(jsonPath("$[1].id", is("2")))
+                .andExpect(jsonPath("$[1].workationId", is("2")))
                 .andExpect(jsonPath("$[1].employee", is("Jane Smith")))
                 .andExpect(jsonPath("$[1].riskLevel", is("HIGH")));
     }
@@ -160,7 +160,7 @@ class WorkationControllerTest {
                                             LocalDate endDate, Integer workingDays,
                                             RiskLevel riskLevel) {
         WorkationDto dto = new WorkationDto();
-        dto.setId(id);
+        dto.setWorkationId(id);
         dto.setEmployee(employee);
         dto.setOriginCountry(origin);
         dto.setDestinationCountry(destination);
