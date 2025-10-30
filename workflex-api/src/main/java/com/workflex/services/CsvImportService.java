@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import com.workflex.exceptions.CsvImportFailedException;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,14 +46,14 @@ public class CsvImportService {
 
 
         } catch (IOException | CsvValidationException e) {
-            throw new RuntimeException("Failed to import workations.csv", e);
+            throw new CsvImportFailedException("Failed to import workations.csv", e);
         }
     }
 
     private Workation mapRow(Map<String, String> row) {
         // CSV headers exactly as provided:
         // workationId,employee,origin,destination,start,end,workingDays,risk
-        String id = row.get("workationId");
+        String workationId = row.get("workationId");
         String employee = row.get("employee");
         String origin = row.get("origin");
         String destination = row.get("destination");
@@ -64,7 +65,7 @@ public class CsvImportService {
         RiskLevel riskLevel = RiskLevel.valueOf(row.get("risk").toUpperCase());
 
         return Workation.builder()
-                .id(id)
+                .workationId(workationId)
                 .employee(employee)
                 .originCountry(origin)
                 .destinationCountry(destination)
