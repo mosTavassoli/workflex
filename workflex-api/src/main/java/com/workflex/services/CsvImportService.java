@@ -24,8 +24,8 @@ import java.util.Map;
 public class CsvImportService {
     private final WorkationRepository workationRepository;
 
-    public void importIfEmpty(){
-        if(workationRepository.count() > 0){
+    public void importIfEmpty() {
+        if (workationRepository.count() > 0) {
             log.info("Skipping CSV import: workations table already contains data (count={}).", workationRepository.count());
             return;
         }
@@ -34,7 +34,7 @@ public class CsvImportService {
              var reader = new CSVReaderHeaderAware(new InputStreamReader(is))) {
 
             List<Workation> buffer = new ArrayList<>();
-            Map<String,String> row;
+            Map<String, String> row;
 
             while ((row = reader.readMap()) != null) {
                 Workation w = mapRow(row);
@@ -58,7 +58,7 @@ public class CsvImportService {
         String origin = row.get("origin");
         String destination = row.get("destination");
         LocalDate startDate = LocalDate.parse(row.get("start")); // yyyy-MM-dd
-        LocalDate endDate   = LocalDate.parse(row.get("end"));   // yyyy-MM-dd
+        LocalDate endDate = LocalDate.parse(row.get("end"));   // yyyy-MM-dd
         Integer workingDays = Integer.parseInt(row.get("workingDays"));
 
         // risk: HIGH | LOW | NO
