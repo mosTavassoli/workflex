@@ -2,7 +2,6 @@ package com.workflex.repositories;
 
 import com.workflex.domain.enums.RiskLevel;
 import com.workflex.domain.models.Workation;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -10,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @DataJpaTest
 class WorkationRepositoryTest {
@@ -18,7 +19,7 @@ class WorkationRepositoryTest {
     WorkationRepository workationRepository;
 
     @Test
-    void saveAndFindById_shouldReturnSameEntity() {
+    void save_shouldPersistAndLoadWorkationCorrectly() {
         Workation workation = Workation.builder()
                 .workationId("W1")
                 .employee("Alice")
@@ -30,14 +31,16 @@ class WorkationRepositoryTest {
                 .riskLevel(RiskLevel.LOW)
                 .build();
 
-
         Workation saved = workationRepository.save(workation);
-        Workation found = workationRepository.findById(saved.getId()).orElse(null);
 
-        assertThat(found).isNotNull();
-        assertThat(found.getEmployee()).isEqualTo("Alice");
-        assertThat(found.getDestinationCountry()).isEqualTo("Spain");
-        assertThat(found.getRiskLevel()).isEqualTo(RiskLevel.LOW);
+        assertThat(saved.getId()).isNotNull();
 
+        Workation found = workationRepository.findById(saved.getId())
+                .orElseThrow();
+
+        assertThat(found)
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(workation);
     }
 }

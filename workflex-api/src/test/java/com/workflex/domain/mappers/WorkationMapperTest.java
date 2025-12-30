@@ -26,9 +26,7 @@ class WorkationMapperTest {
 
     @Test
     void shouldMapDTOToEntity() {
-        WorkationDto dto = new WorkationDto();
-        dto.setId(2L);
-        dto.setEmployee("Alice");
+        WorkationDto dto = WorkationDto.builder().id(2L).employee("Alice").build();
 
         Workation entity = mapper.toEntity(dto);
 

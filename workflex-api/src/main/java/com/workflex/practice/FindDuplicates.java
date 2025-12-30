@@ -28,4 +28,7 @@ public class FindDuplicates {
 
         return new ArrayList<>(result);
     }
+
+    public static class LengthOfLongestSubstring {
+    }
 }

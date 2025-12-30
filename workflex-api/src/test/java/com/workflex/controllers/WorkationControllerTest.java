@@ -1,11 +1,13 @@
 package com.workflex.controllers;
 
+import com.workflex.domain.dtos.GetWorkation;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.domain.enums.RiskLevel;
 import com.workflex.services.WorkationService;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -18,12 +20,13 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 
 @WebMvcTest(WorkationController.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class WorkationControllerTest {
 
     @Autowired
@@ -32,9 +35,11 @@ class WorkationControllerTest {
     @MockitoBean
     private WorkationService workationService;
 
-    @Test
-    void getAll_shouldReturnListOfWorkations_whenWorkationsExist() throws Exception {
-        // Arrange
+
+    List<WorkationDto> workations;
+
+    @BeforeEach
+    void setUp() {
         WorkationDto workation1 = createWorkationDto(
                 "1",
                 "John Doe",
@@ -57,8 +62,17 @@ class WorkationControllerTest {
                 RiskLevel.HIGH
         );
 
-        List<WorkationDto> workations = Arrays.asList(workation1, workation2);
-        when(workationService.getAllWorkations()).thenReturn(workations);
+        workations = Arrays.asList(workation1, workation2);
+    }
+
+
+    @Test
+    void getAll_shouldReturnListOfWorkations_whenWorkationsExist() throws Exception {
+        // Arrange
+
+
+
+        when(workationService.getAllWorkations(any(GetWorkation.class))).thenReturn(workations);
 
         // Act & Assert
         mockMvc.perform(get("/workflex/workation")
@@ -82,7 +96,7 @@ class WorkationControllerTest {
     @Test
     void getAll_shouldReturnEmptyList_whenNoWorkationsExist() throws Exception {
         // Arrange
-        when(workationService.getAllWorkations()).thenReturn(Collections.emptyList());
+        when(workationService.getAllWorkations(any(GetWorkation.class))).thenReturn(Collections.emptyList());
 
         // Act & Assert
         mockMvc.perform(get("/workflex/workation")
@@ -107,7 +121,7 @@ class WorkationControllerTest {
                 RiskLevel.LOW
         );
 
-        when(workationService.getAllWorkations()).thenReturn(List.of(workation));
+        when(workationService.getAllWorkations(any(GetWorkation.class))).thenReturn(List.of(workation));
 
         // Act & Assert
         mockMvc.perform(get("/workflex/workation"))
@@ -126,7 +140,7 @@ class WorkationControllerTest {
         WorkationDto noRisk = createWorkationDto("3", "Employee 3", "Belgium", "Greece",
                 LocalDate.now(), LocalDate.now().plusDays(10), 8, RiskLevel.NO);
 
-        when(workationService.getAllWorkations()).thenReturn(Arrays.asList(highRisk, lowRisk, noRisk));
+        when(workationService.getAllWorkations(any(GetWorkation.class))).thenReturn(Arrays.asList(highRisk, lowRisk, noRisk));
 
         // Act & Assert
         mockMvc.perform(get("/workflex/workation"))
@@ -140,7 +154,7 @@ class WorkationControllerTest {
     @Test
     void getAll_shouldUseCorrectEndpoint() throws Exception {
         // Arrange
-        when(workationService.getAllWorkations()).thenReturn(Collections.emptyList());
+        when(workationService.getAllWorkations(any(GetWorkation.class))).thenReturn(Collections.emptyList());
 
         // Act & Assert - verify correct endpoint
         mockMvc.perform(get("/workflex/workation"))
@@ -159,15 +173,87 @@ class WorkationControllerTest {
                                             String destination, LocalDate startDate,
                                             LocalDate endDate, Integer workingDays,
                                             RiskLevel riskLevel) {
-        WorkationDto dto = new WorkationDto();
-        dto.setWorkationId(id);
-        dto.setEmployee(employee);
-        dto.setOriginCountry(origin);
-        dto.setDestinationCountry(destination);
-        dto.setStartDate(startDate);
-        dto.setEndDate(endDate);
-        dto.setWorkingDays(workingDays);
-        dto.setRiskLevel(riskLevel);
-        return dto;
+        return WorkationDto.builder().workationId(id)
+                .employee(employee)
+                .originCountry(origin)
+                .destinationCountry(destination)
+                .startDate(startDate)
+                .endDate(endDate)
+                .workingDays(workingDays)
+                .riskLevel(riskLevel).build();
     }
+
+
+    @Test
+    void returnCorrectWorkstationById() throws Exception {
+        when(workationService.getWorkationById(Mockito.anyLong()))
+                .thenReturn(workations.get(0));
+
+        mockMvc.perform(get("/workflex/workation/1")).
+                andExpect(status().isOk());
+
+    }
+
+    @Test
+    void notFoundWorkationIfPassWrongId() throws Exception {
+        when(workationService.getWorkationById(100L)).thenThrow(
+                new EntityNotFoundException("Workation not found"));
+
+        mockMvc.perform(get("/workflex/workation/100")).andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    void shouldCreateWorkationSuccessfully() throws Exception {
+        WorkationDto newWorkationDto =
+                WorkationDto.builder().id(10L).workationId("10").build();
+
+        when(workationService.createWorkation(any(WorkationDto.class)))
+                .thenReturn(newWorkationDto);
+
+        String json = """
+                  {
+                    "id":10,
+                    "workationId":"10"
+                  }
+                """;
+
+        mockMvc.perform(post("/workflex/workation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        ).andExpect(status().isCreated());
+
+    }
+
+    @Test
+    void  shouldNotCreateAndThrowExceptionIfWorkationIdIsNull() throws Exception {
+        String json = """
+                  {
+                    "id":10,
+                    "workationId":""
+                  }
+                """;
+
+        verify(workationService, never()).createWorkation(any());
+
+        mockMvc.perform(post("/workflex/workation")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        ).andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    void shouldReturnWorkationsFilteredByEmployee() throws Exception {
+
+        when(workationService.getAllWorkations(any(GetWorkation.class)))
+                .thenReturn(workations);
+
+        mockMvc.perform(get("/workflex/workation")
+                        .param("employee", "John Doe"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].workationId").value("1"))
+                .andExpect(jsonPath("$[0].employee").value("John Doe"));
+    }
+
 }

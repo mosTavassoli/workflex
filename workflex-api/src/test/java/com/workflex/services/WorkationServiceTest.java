@@ -1,19 +1,24 @@
 package com.workflex.services;
 
+import com.workflex.domain.dtos.GetWorkation;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.domain.mappers.WorkationMapper;
 import com.workflex.domain.models.Workation;
 import com.workflex.repositories.WorkationRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 
@@ -23,27 +28,131 @@ class WorkationServiceTest {
     @Mock
     WorkationRepository repository;
 
-    @Mock
-    WorkationMapper mapper;
+    WorkationMapper mapper =
+            Mappers.getMapper(WorkationMapper.class);
 
-    @InjectMocks
+
     WorkationService service;
+
+    @BeforeEach
+    void setUp() {
+        service = new WorkationService(repository, mapper);
+    }
 
     @Test
     void getAllWorkations_shouldReturnMappedDtos() {
-        var entity = new Workation(); // could be empty
-        var dto = new WorkationDto();
+        var entity = Workation.builder().id(1L)
+                .workationId("10")
+                .originCountry("ITALY")
+                .build();
 
-        when(repository.findAll()).thenReturn(List.of(entity));
-        when(mapper.toDtoList(List.of(entity))).thenReturn(List.of(dto));
+        when(repository.search(any(), any()))
+                .thenReturn(List.of(entity));
 
-        List<WorkationDto> result = service.getAllWorkations();
+        GetWorkation params = new GetWorkation();
 
-        assertThat(result).hasSize(1);
-        assertThat(result).contains(dto);
+        List<WorkationDto> result = service.getAllWorkations(params);
 
-        verify(repository).findAll();        // called once
-        verify(mapper).toDtoList(List.of(entity)); // called once
-        verifyNoMoreInteractions(repository, mapper);
+        assertThat(result)
+                .hasSize(1)
+                .first()
+                .satisfies(dto -> {
+                    assertThat(dto.getId()).isEqualTo(1L);
+                    assertThat(dto.getWorkationId()).isEqualTo("10");
+                    assertThat(dto.getOriginCountry()).isEqualTo("ITALY");
+                });
+
+        verify(repository).search(any(), any());
     }
+
+    @Test
+    void shouldReturnWorkationByGivenValidId() {
+        var entity = Workation.builder().id(1L)
+                .workationId("10")
+                .originCountry("ITALY")
+                .build();
+
+        when(repository.findById(1L)).thenReturn(Optional.of(entity));
+
+
+        WorkationDto result = service.getWorkationById(1L);
+
+        assertThat(result)
+                .satisfies(dto -> {
+                    assertThat(dto.getId()).isEqualTo(1L);
+                    assertThat(dto.getWorkationId()).isEqualTo("10");
+                    assertThat(dto.getOriginCountry()).isEqualTo("ITALY");
+                });
+
+        verify(repository).findById(1L);
+
+    }
+
+    @Test
+    void shouldThrowExceptionWhenWorkationDoesNotExist() {
+        // given
+        when(repository.findById(99L)).thenReturn(Optional.empty());
+
+        // when / then
+        assertThatThrownBy(() -> service.getWorkationById(99L))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Workation not found with id: 99");
+
+        verify(repository).findById(99L);
+    }
+
+    @Test
+    void shouldCreateWorkation() {
+        WorkationDto dto = WorkationDto.builder()
+                .workationId("10")
+                .originCountry("ITALY")
+                .build();
+
+        Workation savedEntity = Workation.builder()
+                .id(2L)
+                .workationId("10")
+                .originCountry("ITALY")
+                .build();
+
+        when(repository.save(any(Workation.class)))
+                .thenReturn(savedEntity);
+
+        WorkationDto result = service.createWorkation(dto);
+
+        assertThat(result)
+                .satisfies(res -> {
+                    assertThat(res.getId()).isEqualTo(2L);
+                    assertThat(res.getWorkationId()).isEqualTo("10");
+                    assertThat(res.getOriginCountry()).isEqualTo("ITALY");
+                });
+
+        verify(repository).save(any(Workation.class));
+
+    }
+
+    @Test
+    void shouldReturnWorkationGivenEmployee() {
+        var entity = Workation.builder().id(1L)
+                .employee("JOHN")
+                .workationId("10")
+                .originCountry("ITALY")
+                .build();
+
+        GetWorkation params = GetWorkation.builder().employee("john").build();
+
+        when(repository.search(
+                argThat(emp -> emp.equalsIgnoreCase("john")),
+                isNull()
+        )).thenReturn(List.of(entity));
+
+        List<WorkationDto> result = service.getAllWorkations(params);
+
+        assertThat(result).hasSize(1)
+                .first().satisfies(res -> {
+                    assertThat(res.getId()).isEqualTo(1L);
+                    assertThat(res.getEmployee()).isEqualTo("JOHN");
+                });
+
+    }
+
 }
