@@ -31,7 +31,6 @@ class WorkationServiceTest {
     WorkationMapper mapper =
             Mappers.getMapper(WorkationMapper.class);
 
-
     WorkationService service;
 
     @BeforeEach
@@ -138,7 +137,10 @@ class WorkationServiceTest {
                 .originCountry("ITALY")
                 .build();
 
-        GetWorkation params = GetWorkation.builder().employee("john").build();
+        GetWorkation params = GetWorkation
+                .builder()
+                .employee("john")
+                .build();
 
         when(repository.search(
                 argThat(emp -> emp.equalsIgnoreCase("john")),
@@ -147,8 +149,10 @@ class WorkationServiceTest {
 
         List<WorkationDto> result = service.getAllWorkations(params);
 
-        assertThat(result).hasSize(1)
-                .first().satisfies(res -> {
+        assertThat(result)
+                .hasSize(1)
+                .first()
+                .satisfies(res -> {
                     assertThat(res.getId()).isEqualTo(1L);
                     assertThat(res.getEmployee()).isEqualTo("JOHN");
                 });
