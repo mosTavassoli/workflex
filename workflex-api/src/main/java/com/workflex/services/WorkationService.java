@@ -41,10 +41,4 @@ public class WorkationService {
                 )
         );
     }
-
-//    public List<WorkationDto> findByEmployee(String name, String country){
-//        return mapper.toDtoList(
-//                repository.findByEmployee(name, country)
-//        );
-//    }
 }

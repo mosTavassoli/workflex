@@ -4,7 +4,6 @@ import com.workflex.domain.dtos.GetWorkation;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.services.WorkationService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;

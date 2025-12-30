@@ -69,9 +69,6 @@ class WorkationControllerTest {
     @Test
     void getAll_shouldReturnListOfWorkations_whenWorkationsExist() throws Exception {
         // Arrange
-
-
-
         when(workationService.getAllWorkations(any(GetWorkation.class))).thenReturn(workations);
 
         // Act & Assert
