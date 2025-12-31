@@ -21,8 +21,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -223,7 +222,7 @@ class WorkationControllerTest {
     }
 
     @Test
-    void  shouldNotCreateAndThrowExceptionIfWorkationIdIsNull() throws Exception {
+    void shouldNotCreateAndThrowExceptionIfWorkationIdIsNull() throws Exception {
         String json = """
                   {
                     "id":10,
@@ -251,6 +250,52 @@ class WorkationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].workationId").value("1"))
                 .andExpect(jsonPath("$[0].employee").value("John Doe"));
+    }
+
+    @Test
+    void shouldUpdateWorkationGivenExistingId() throws Exception {
+        WorkationDto updatedWorkation =
+                WorkationDto.builder().id(1L).workationId("11").employee("John Doe 1").build();
+
+        when(workationService.updateWorkation(anyLong(), any(WorkationDto.class)))
+                .thenReturn(updatedWorkation);
+
+
+        String json = """
+                  {
+                    "employee":"John Doe 1",
+                    "workationId":"11"
+                  }
+                """;
+
+        mockMvc.perform(put("/workflex/workation/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.employee").value("John Doe 1"))
+                .andExpect(jsonPath("$.workationId").value("11"));
+
+        verify(workationService)
+                .updateWorkation(eq(1L), any(WorkationDto.class));
+    }
+
+    @Test
+    void shouldReturnNotFoundExceptionIfIdNotFound() throws Exception {
+        when(workationService.updateWorkation(anyLong(), any(WorkationDto.class))).thenThrow(
+                new EntityNotFoundException("Workation not found"));
+
+        String json = """
+                {
+                  "employee": "Someone",
+                  "workationId": "X-100"
+                }
+                """;
+
+        mockMvc.perform(put("/workflex/workation/100").contentType(MediaType.APPLICATION_JSON)
+                .content(json)).andExpect(status().isNotFound());
+
+        verify(workationService)
+                .updateWorkation(eq(100L), any(WorkationDto.class));
     }
 
 }
