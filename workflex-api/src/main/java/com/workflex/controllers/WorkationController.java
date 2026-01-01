@@ -1,6 +1,6 @@
 package com.workflex.controllers;
 
-import com.workflex.domain.dtos.GetWorkation;
+import com.workflex.domain.dtos.GetWorkationDto;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.services.WorkationService;
 import jakarta.validation.Valid;
@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/workflex/workation")
@@ -20,11 +19,12 @@ public class WorkationController {
     private final WorkationService workationService;
 
     @GetMapping
-    public ResponseEntity<org.springframework.data.domain.Page<WorkationDto>> getAll(
-            @Valid GetWorkation params,
+    public ResponseEntity<Page<WorkationDto>> getAll(
+            @Valid GetWorkationDto params,
             Pageable pageable
     ) {
-        Page<WorkationDto> page = workationService.getAllWorkations(params, pageable);
+        Page<WorkationDto> page =
+                workationService.getAllWorkations(params, pageable);
         return ResponseEntity.ok(page);
     }
 

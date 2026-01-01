@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetWorkation {
+public class GetWorkationDto {
     private String employee;
     private String originCountry;
 }

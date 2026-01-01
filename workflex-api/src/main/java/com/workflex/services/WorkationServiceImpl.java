@@ -1,36 +1,34 @@
 package com.workflex.services;
 
-import com.workflex.domain.dtos.GetWorkation;
+import com.workflex.domain.dtos.GetWorkationDto;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.domain.mappers.WorkationMapper;
 import com.workflex.domain.models.Workation;
 import com.workflex.repositories.WorkationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
 import org.springframework.data.domain.Pageable;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class WorkationServiceImpl implements WorkationService {
 
     private final WorkationRepository repository;
     private final WorkationMapper mapper;
 
-    public WorkationServiceImpl(WorkationRepository repository, WorkationMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
-    }
-
     @Override
-    public Page<WorkationDto> getAllWorkations(GetWorkation params, Pageable pageable) {
+    public Page<WorkationDto> getAllWorkations(
+            GetWorkationDto params,
+            Pageable pageable
+    ) {
         return repository.search(
                 params.getEmployee(),
                 params.getOriginCountry(),
                 pageable
-
         ).map(mapper::toDto);
     }
 

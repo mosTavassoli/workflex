@@ -1,6 +1,6 @@
 package com.workflex.services;
 
-import com.workflex.domain.dtos.GetWorkation;
+import com.workflex.domain.dtos.GetWorkationDto;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.domain.mappers.WorkationMapper;
 import com.workflex.domain.models.Workation;
@@ -55,7 +55,7 @@ class WorkationServiceTest {
         when(repository.search(any(), any(), any()))
                 .thenReturn(page);
 
-        GetWorkation params = new GetWorkation();
+        GetWorkationDto params = new GetWorkationDto();
 
         Page<WorkationDto> result = service.getAllWorkations(params, pageable);
 
@@ -146,7 +146,7 @@ class WorkationServiceTest {
                 .originCountry("ITALY")
                 .build();
 
-        GetWorkation params = GetWorkation
+        GetWorkationDto params = GetWorkationDto
                 .builder()
                 .employee("john")
                 .build();
