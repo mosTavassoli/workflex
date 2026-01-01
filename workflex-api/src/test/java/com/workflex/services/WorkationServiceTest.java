@@ -15,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,7 +54,7 @@ class WorkationServiceTest {
 
         Page<Workation> page = new PageImpl<>(List.of(entity), pageable, 1);
 
-        when(repository.search(any(), any(), any()))
+        when(repository.findAll(any(Specification.class), any(Pageable.class)))
                 .thenReturn(page);
 
         GetWorkationDto params = new GetWorkationDto();
@@ -68,7 +70,7 @@ class WorkationServiceTest {
                     assertThat(dto.getOriginCountry()).isEqualTo("ITALY");
                 });
 
-        verify(repository).search(any(), any(), any());
+        verify(repository).findAll(any(Specification.class), any(Pageable.class));
     }
 
     @Test
@@ -154,11 +156,9 @@ class WorkationServiceTest {
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Workation> page = new PageImpl<>(List.of(entity), pageable, 1);
 
-        when(repository.search(
-                argThat(emp -> emp.equalsIgnoreCase("john")),
-                isNull(),
-                any()
-        )).thenReturn(page);
+
+        when(repository.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(page);
 
         Page<WorkationDto> result = service.getAllWorkations(params, pageable);
 
@@ -169,6 +169,8 @@ class WorkationServiceTest {
                     assertThat(res.getId()).isEqualTo(1L);
                     assertThat(res.getEmployee()).isEqualTo("JOHN");
                 });
+
+        verify(repository).findAll(any(Specification.class), eq(pageable));
 
     }
 

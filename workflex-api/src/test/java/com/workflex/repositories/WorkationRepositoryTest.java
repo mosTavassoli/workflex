@@ -2,13 +2,14 @@ package com.workflex.repositories;
 
 import com.workflex.domain.enums.RiskLevel;
 import com.workflex.domain.models.Workation;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import static com.workflex.repositories.specifications.WorkationSpecifications.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,9 +55,11 @@ class WorkationRepositoryTest {
         workationRepository.save(workation);
 
         Pageable pageable = PageRequest.of(0, 10);
+        Specification<Workation> spec = notDeleted()
+                .and(employeeContains("Alice"));
 
         // act
-        Page<Workation> page = workationRepository.search("Alice", null, pageable);
+        Page<Workation> page = workationRepository.findAll(spec, pageable);
 
         List<Workation> result = page.getContent();
 

@@ -11,6 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
+import static com.workflex.repositories.specifications.WorkationSpecifications.*;
+import org.springframework.data.jpa.domain.Specification;
+
+
 
 @Service
 @Transactional
@@ -25,11 +29,13 @@ public class WorkationServiceImpl implements WorkationService {
             GetWorkationDto params,
             Pageable pageable
     ) {
-        return repository.search(
-                params.getEmployee(),
-                params.getOriginCountry(),
-                pageable
-        ).map(mapper::toDto);
+        Specification<Workation> spec = notDeleted()
+                .and(employeeContains(params.getEmployee()))
+                .and(originCountryEquals(params.getOriginCountry()));
+
+        Page<Workation> page = repository.findAll(spec, pageable);
+
+        return page.map(mapper::toDto);
     }
 
     @Override
