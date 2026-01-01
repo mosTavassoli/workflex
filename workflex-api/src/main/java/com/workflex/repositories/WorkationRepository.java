@@ -1,5 +1,7 @@
 package com.workflex.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.workflex.domain.models.Workation;
 import org.springframework.data.jpa.repository.Query;
@@ -17,13 +19,14 @@ public interface WorkationRepository extends JpaRepository<Workation, Long> {
                AND (:employee IS NULL OR LOWER(w.employee) LIKE LOWER(CONCAT('%', :employee, '%')))
                AND (:originCountry IS NULL OR w.originCountry = :originCountry)
             """)
-    List<Workation> search(
+    Page<Workation> search(
             @Param("employee") String employee,
-            @Param("originCountry") String originCountry
+            @Param("originCountry") String originCountry,
+            Pageable pageable
     );
 
 
     Optional<Workation> findByIdAndDeletedAtIsNull(Long id);
 
-    List<Workation> findAllByDeletedAtIsNull();
+    Page<Workation> findAllByDeletedAtIsNull(Pageable pageable);
 }
