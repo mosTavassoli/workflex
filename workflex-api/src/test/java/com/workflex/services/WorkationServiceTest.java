@@ -69,9 +69,10 @@ class WorkationServiceTest {
         var entity = Workation.builder().id(1L)
                 .workationId("10")
                 .originCountry("ITALY")
+                .deletedAt(null)
                 .build();
 
-        when(repository.findById(1L)).thenReturn(Optional.of(entity));
+        when(repository.findByIdAndDeletedAtIsNull(1L)).thenReturn(Optional.of(entity));
 
 
         WorkationDto result = service.getWorkationById(1L);
@@ -83,21 +84,21 @@ class WorkationServiceTest {
                     assertThat(dto.getOriginCountry()).isEqualTo("ITALY");
                 });
 
-        verify(repository).findById(1L);
+        verify(repository).findByIdAndDeletedAtIsNull(1L);
 
     }
 
     @Test
     void shouldThrowExceptionWhenWorkationDoesNotExist() {
         // given
-        when(repository.findById(99L)).thenReturn(Optional.empty());
+        when(repository.findByIdAndDeletedAtIsNull(99L)).thenReturn(Optional.empty());
 
         // when / then
         assertThatThrownBy(() -> service.getWorkationById(99L))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("Workation not found with id: 99");
 
-        verify(repository).findById(99L);
+        verify(repository).findByIdAndDeletedAtIsNull(99L);
     }
 
     @Test
