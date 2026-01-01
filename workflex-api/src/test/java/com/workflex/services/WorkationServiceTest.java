@@ -45,15 +45,20 @@ class WorkationServiceTest {
     void getAllWorkations_shouldReturnMappedDtos() {
         PageRequest pageable = PageRequest.of(0, 10);
 
-        var entity = Workation.builder().id(1L)
+        var entity = Workation.builder()
+                .id(1L)
                 .workationId("10")
                 .originCountry("ITALY")
                 .build();
 
-        Page<Workation> page = new PageImpl<>(List.of(entity), pageable, 1);
+        Page<Workation> page = new PageImpl<>(
+                List.of(entity),
+                pageable, 1
+        );
 
-        when(repository.search(any(), any(), any()))
-                .thenReturn(page);
+        when(repository
+                .search(any(), any(), any())
+        ).thenReturn(page);
 
         GetWorkationDto params = new GetWorkationDto();
 

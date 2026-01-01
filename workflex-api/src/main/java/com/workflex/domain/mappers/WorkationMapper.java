@@ -3,7 +3,6 @@ package com.workflex.domain.mappers;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.domain.models.Workation;
 import org.mapstruct.*;
-import org.springframework.data.domain.Page;
 
 @Mapper(
         componentModel = "spring",

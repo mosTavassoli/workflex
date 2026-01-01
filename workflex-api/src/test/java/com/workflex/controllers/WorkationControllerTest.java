@@ -73,7 +73,11 @@ class WorkationControllerTest {
     @Test
     void getAll_shouldReturnListOfWorkations_whenWorkationsExist() throws Exception {
         // Arrange
-        when(workationService.getAllWorkations(any(GetWorkationDto.class), any(Pageable.class))).thenReturn(workations);
+        when(workationService
+                .getAllWorkations(
+                        any(GetWorkationDto.class),
+                        any(Pageable.class)))
+                .thenReturn(workations);
 
         // Act & Assert
         mockMvc.perform(get("/workflex/workation")
@@ -101,8 +105,12 @@ class WorkationControllerTest {
     @Test
     void getAll_shouldReturnEmptyList_whenNoWorkationsExist() throws Exception {
         // Arrange
-        Page<WorkationDto> emptyPage = new PageImpl<>(
-                List.of(), PageRequest.of(0, 10), 0);
+        Page<WorkationDto> emptyPage =
+                new PageImpl<>(
+                        List.of(),
+                        PageRequest.of(0, 10),
+                        0
+                );
         when(workationService.getAllWorkations(any(GetWorkationDto.class), any(Pageable.class))).thenReturn(emptyPage);
 
         // Act & Assert
@@ -128,10 +136,18 @@ class WorkationControllerTest {
                 RiskLevel.LOW
         );
 
-        Page<WorkationDto> createdWorkation = new PageImpl<>(
-                List.of(workation), PageRequest.of(0, 10), 0);
+        Page<WorkationDto> createdWorkation =
+                new PageImpl<>(
+                        List.of(workation),
+                        PageRequest.of(0, 10),
+                        0
+                );
 
-        when(workationService.getAllWorkations(any(GetWorkationDto.class), any(Pageable.class))).thenReturn(createdWorkation);
+        when(workationService
+                .getAllWorkations(
+                        any(GetWorkationDto.class),
+                        any(Pageable.class)))
+                .thenReturn(createdWorkation);
 
         // Act & Assert
         mockMvc.perform(get("/workflex/workation"))
@@ -170,7 +186,11 @@ class WorkationControllerTest {
         // Arrange
         Page<WorkationDto> emptyPage = new PageImpl<>(
                 List.of(), PageRequest.of(0, 10), 0);
-        when(workationService.getAllWorkations(any(GetWorkationDto.class), any(Pageable.class))).thenReturn(emptyPage);
+        when(workationService
+                .getAllWorkations(
+                        any(GetWorkationDto.class),
+                        any(Pageable.class)))
+                .thenReturn(emptyPage);
 
         // Act & Assert - verify correct endpoint
         mockMvc.perform(get("/workflex/workation"))
@@ -203,7 +223,8 @@ class WorkationControllerTest {
     @Test
     void returnCorrectWorkstationById() throws Exception {
 
-        when(workationService.getWorkationById(Mockito.anyLong()))
+        when(workationService
+                .getWorkationById(Mockito.anyLong()))
                 .thenReturn(workations.getContent().get(0));
 
         mockMvc.perform(get("/workflex/workation/1")).

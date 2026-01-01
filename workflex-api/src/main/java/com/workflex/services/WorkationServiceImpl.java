@@ -54,7 +54,10 @@ public class WorkationServiceImpl implements WorkationService {
     public WorkationDto updateWorkation(Long id, WorkationDto body) {
         Workation entity = repository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() ->
-                        new EntityNotFoundException("Workation not found with id: " + id));
+                        new EntityNotFoundException(
+                                "Workation not found with id: " + id
+                        )
+                );
 
         mapper.updateEntityFromDto(body, entity);
         return mapper.toDto(entity);
@@ -63,7 +66,10 @@ public class WorkationServiceImpl implements WorkationService {
     public void deleteWorkation(Long id) {
         Workation workation = repository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() ->
-                        new EntityNotFoundException("Workation not found with id: " + id));
+                        new EntityNotFoundException(
+                                "Workation not found with id: " + id
+                        )
+                );
 
         workation.markDeleted();
         repository.save(workation);

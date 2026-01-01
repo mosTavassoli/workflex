@@ -2,7 +2,6 @@ package com.workflex.repositories;
 
 import com.workflex.domain.enums.RiskLevel;
 import com.workflex.domain.models.Workation;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+
 
 @DataJpaTest
 class WorkationRepositoryTest {
@@ -56,7 +55,8 @@ class WorkationRepositoryTest {
         Pageable pageable = PageRequest.of(0, 10);
 
         // act
-        Page<Workation> page = workationRepository.search("Alice", null, pageable);
+        Page<Workation> page = workationRepository
+                .search("Alice", null, pageable);
 
         List<Workation> result = page.getContent();
 
