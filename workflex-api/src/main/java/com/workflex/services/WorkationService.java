@@ -2,61 +2,16 @@ package com.workflex.services;
 
 import com.workflex.domain.dtos.GetWorkation;
 import com.workflex.domain.dtos.WorkationDto;
-import com.workflex.domain.mappers.WorkationMapper;
-import com.workflex.domain.models.Workation;
-import com.workflex.repositories.WorkationRepository;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class WorkationService {
-    private final WorkationRepository repository;
-    private final WorkationMapper mapper;
+import org.springframework.data.domain.Pageable;
 
-    public List<WorkationDto> getAllWorkations(GetWorkation params) {
-        return mapper.toDtoList(
-                repository.search(
-                        params.getEmployee(),
-                        params.getOriginCountry()
-                )
-        );
-    }
 
-    public WorkationDto getWorkationById(Long id) {
-        Workation workation = repository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Workation not found with id: " + id
-                ));
-        return mapper.toDto(workation);
-    }
-
-    public WorkationDto createWorkation(WorkationDto body) {
-        return mapper.toDto(
-                repository.save(
-                        mapper.toEntity(body)
-                )
-        );
-    }
-
-    @Transactional
-    public WorkationDto updateWorkation(Long id, WorkationDto body) {
-        Workation entity = repository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(() -> new EntityNotFoundException("Workation not found with id: " + id));
-
-        mapper.updateEntityFromDto(body, entity);
-        return mapper.toDto(entity);
-    }
-
-    public void deleteWorkation(Long id) {
-        Workation workation = repository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(() -> new EntityNotFoundException("Workation not found with id: " + id));
-
-        workation.markDeleted();
-        repository.save(workation);
-    }
+public interface WorkationService {
+    Page<WorkationDto> getAllWorkations(GetWorkation params, Pageable pageable);
+    WorkationDto getWorkationById(Long id);
+    WorkationDto createWorkation(WorkationDto body);
+    WorkationDto updateWorkation(Long id, WorkationDto body);
+    void deleteWorkation(Long id);
 }
