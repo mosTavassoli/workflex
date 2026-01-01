@@ -6,17 +6,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.workflex.domain.enums.RiskLevel;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Entity
-@Table(name = "workations")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
+@Table(name = "workations")
 public class Workation {
 
     @Id
@@ -44,5 +42,19 @@ public class Workation {
 
     @Enumerated(EnumType.STRING)
     private RiskLevel riskLevel;
+
+    @Column(name="deleted_at")
+    private LocalDate deletedAt;
+
+    public void markDeleted() {
+        if (this.deletedAt != null) {
+            throw new IllegalStateException("Workation already deleted");
+        }
+        this.deletedAt = LocalDate.now();
+    }
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
 }
 

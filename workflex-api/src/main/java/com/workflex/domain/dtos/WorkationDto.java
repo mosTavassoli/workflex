@@ -32,5 +32,7 @@ public class WorkationDto {
 
     private Integer workingDays;
     private RiskLevel riskLevel;
+
+    private LocalDate deletedAt;
 }
 

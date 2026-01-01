@@ -14,7 +14,7 @@ public interface WorkationRepository extends JpaRepository<Workation, Long> {
     @Query("""
             SELECT w FROM Workation w
             WHERE w.deletedAt IS NULL
-               AND  (:employee IS NULL OR LOWER(w.employee) LIKE LOWER(CONCAT('%', :employee, '%')))
+               AND (:employee IS NULL OR LOWER(w.employee) LIKE LOWER(CONCAT('%', :employee, '%')))
                AND (:originCountry IS NULL OR w.originCountry = :originCountry)
             """)
     List<Workation> search(

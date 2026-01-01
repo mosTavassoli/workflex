@@ -36,7 +36,7 @@ class WorkationRepositoryTest {
 
         assertThat(saved.getId()).isNotNull();
 
-        Workation found = workationRepository.findById(saved.getId())
+        Workation found = workationRepository.findByIdAndDeletedAtIsNull(saved.getId())
                 .orElseThrow();
 
         assertThat(found)
@@ -55,6 +55,7 @@ class WorkationRepositoryTest {
 
         // assert
         assertThat(result).hasSize(1);
+
         assertThat(result.get(0))
                 .usingRecursiveComparison()
                 .ignoringFields("id")

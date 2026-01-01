@@ -6,6 +6,7 @@ import com.workflex.domain.mappers.WorkationMapper;
 import com.workflex.domain.models.Workation;
 import com.workflex.repositories.WorkationRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class WorkationService {
     }
 
     public WorkationDto getWorkationById(Long id) {
-        Workation workation = repository.findById(id)
+        Workation workation = repository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Workation not found with id: " + id
                 ));
@@ -40,5 +41,22 @@ public class WorkationService {
                         mapper.toEntity(body)
                 )
         );
+    }
+
+    @Transactional
+    public WorkationDto updateWorkation(Long id, WorkationDto body) {
+        Workation entity = repository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new EntityNotFoundException("Workation not found with id: " + id));
+
+        mapper.updateEntityFromDto(body, entity);
+        return mapper.toDto(entity);
+    }
+
+    public void deleteWorkation(Long id) {
+        Workation workation = repository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new EntityNotFoundException("Workation not found with id: " + id));
+
+        workation.markDeleted();
+        repository.save(workation);
     }
 }
