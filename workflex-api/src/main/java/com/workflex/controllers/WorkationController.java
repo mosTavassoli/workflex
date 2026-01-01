@@ -5,6 +5,8 @@ import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.services.WorkationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +20,12 @@ public class WorkationController {
     private final WorkationService workationService;
 
     @GetMapping
-    public List<WorkationDto> getAll(
-            @ModelAttribute GetWorkation params
+    public ResponseEntity<org.springframework.data.domain.Page<WorkationDto>> getAll(
+            @Valid GetWorkation params,
+            Pageable pageable
     ) {
-        return workationService.getAllWorkations(params);
+        Page<WorkationDto> page = workationService.getAllWorkations(params, pageable);
+        return ResponseEntity.ok(page);
     }
 
 
@@ -43,7 +47,7 @@ public class WorkationController {
 
     @PutMapping("/{id}")
     public ResponseEntity<WorkationDto> updateWorkation(
-            @PathVariable(required = false) Long id,
+            @PathVariable Long id,
             @Valid @RequestBody WorkationDto body) {
         WorkationDto updated =
                 workationService.updateWorkation(id, body);

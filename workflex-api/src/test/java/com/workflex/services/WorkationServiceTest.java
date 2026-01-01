@@ -12,6 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,26 +34,30 @@ class WorkationServiceTest {
     WorkationMapper mapper =
             Mappers.getMapper(WorkationMapper.class);
 
-    WorkationService service;
+    WorkationServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        service = new WorkationService(repository, mapper);
+        service = new WorkationServiceImpl(repository, mapper);
     }
 
     @Test
     void getAllWorkations_shouldReturnMappedDtos() {
+        PageRequest pageable = PageRequest.of(0, 10);
+
         var entity = Workation.builder().id(1L)
                 .workationId("10")
                 .originCountry("ITALY")
                 .build();
 
-        when(repository.search(any(), any()))
-                .thenReturn(List.of(entity));
+        Page<Workation> page = new PageImpl<>(List.of(entity), pageable, 1);
+
+        when(repository.search(any(), any(), any()))
+                .thenReturn(page);
 
         GetWorkation params = new GetWorkation();
 
-        List<WorkationDto> result = service.getAllWorkations(params);
+        Page<WorkationDto> result = service.getAllWorkations(params, pageable);
 
         assertThat(result)
                 .hasSize(1)
@@ -61,7 +68,7 @@ class WorkationServiceTest {
                     assertThat(dto.getOriginCountry()).isEqualTo("ITALY");
                 });
 
-        verify(repository).search(any(), any());
+        verify(repository).search(any(), any(), any());
     }
 
     @Test
@@ -132,7 +139,8 @@ class WorkationServiceTest {
 
     @Test
     void shouldReturnWorkationGivenEmployee() {
-        var entity = Workation.builder().id(1L)
+        var entity = Workation.builder()
+                .id(1L)
                 .employee("JOHN")
                 .workationId("10")
                 .originCountry("ITALY")
@@ -143,12 +151,16 @@ class WorkationServiceTest {
                 .employee("john")
                 .build();
 
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<Workation> page = new PageImpl<>(List.of(entity), pageable, 1);
+
         when(repository.search(
                 argThat(emp -> emp.equalsIgnoreCase("john")),
-                isNull()
-        )).thenReturn(List.of(entity));
+                isNull(),
+                any()
+        )).thenReturn(page);
 
-        List<WorkationDto> result = service.getAllWorkations(params);
+        Page<WorkationDto> result = service.getAllWorkations(params, pageable);
 
         assertThat(result)
                 .hasSize(1)

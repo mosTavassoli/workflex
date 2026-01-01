@@ -86,11 +86,14 @@ public class WorkationIntegrationTest {
 
     @Test
     void shouldBindEmployeeParamIntoGetWorkationAndFilterResults() throws Exception {
-        mockMvc.perform(get(BASE_URL).param("employee", "john"))
+        mockMvc.perform(get(BASE_URL)
+                        .param("employee", "john")
+                        .param("page", "0")
+                        .param("size", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].employee").value("john"))
-                .andExpect(jsonPath("$[0].workationId").value("W-401"));
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].employee").value("john"))
+                .andExpect(jsonPath("$.content[0].workationId").value("W-401"));
     }
 
 }

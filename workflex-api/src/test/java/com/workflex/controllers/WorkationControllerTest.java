@@ -10,13 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -35,7 +37,7 @@ class WorkationControllerTest {
     private WorkationService workationService;
 
 
-    List<WorkationDto> workations;
+    Page<WorkationDto> workations;
 
     @BeforeEach
     void setUp() {
@@ -61,46 +63,55 @@ class WorkationControllerTest {
                 RiskLevel.HIGH
         );
 
-        workations = Arrays.asList(workation1, workation2);
+        workations = new PageImpl<>(
+                List.of(workation1, workation2),
+                PageRequest.of(0, 10),
+                2
+        );
     }
-
 
     @Test
     void getAll_shouldReturnListOfWorkations_whenWorkationsExist() throws Exception {
         // Arrange
-        when(workationService.getAllWorkations(any(GetWorkation.class))).thenReturn(workations);
+        when(workationService.getAllWorkations(any(GetWorkation.class), any(Pageable.class))).thenReturn(workations);
 
         // Act & Assert
         mockMvc.perform(get("/workflex/workation")
+                        .param("page", "0")
+                        .param("size", "10")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].workationId", is("1")))
-                .andExpect(jsonPath("$[0].employee", is("John Doe")))
-                .andExpect(jsonPath("$[0].originCountry", is("Germany")))
-                .andExpect(jsonPath("$[0].destinationCountry", is("Spain")))
-                .andExpect(jsonPath("$[0].startDate", is("15/01/2024")))
-                .andExpect(jsonPath("$[0].endDate", is("30/01/2024")))
-                .andExpect(jsonPath("$[0].workingDays", is(10)))
-                .andExpect(jsonPath("$[0].riskLevel", is("NO")))
-                .andExpect(jsonPath("$[1].workationId", is("2")))
-                .andExpect(jsonPath("$[1].employee", is("Jane Smith")))
-                .andExpect(jsonPath("$[1].riskLevel", is("HIGH")));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.pageable.pageSize").value(10))
+                .andExpect(jsonPath("$.content[0].workationId", is("1")))
+                .andExpect(jsonPath("$.content[0].employee", is("John Doe")))
+                .andExpect(jsonPath("$.content[0].originCountry", is("Germany")))
+                .andExpect(jsonPath("$.content[0].destinationCountry", is("Spain")))
+                .andExpect(jsonPath("$.content[0].startDate", is("15/01/2024")))
+                .andExpect(jsonPath("$.content[0].endDate", is("30/01/2024")))
+                .andExpect(jsonPath("$.content[0].workingDays", is(10)))
+                .andExpect(jsonPath("$.content[0].riskLevel", is("NO")))
+                .andExpect(jsonPath("$.content[1].workationId", is("2")))
+                .andExpect(jsonPath("$.content[1].employee", is("Jane Smith")))
+                .andExpect(jsonPath("$.content[1].riskLevel", is("HIGH")));
     }
 
     @Test
     void getAll_shouldReturnEmptyList_whenNoWorkationsExist() throws Exception {
         // Arrange
-        when(workationService.getAllWorkations(any(GetWorkation.class))).thenReturn(Collections.emptyList());
+        Page<WorkationDto> emptyPage = new PageImpl<>(
+                List.of(), PageRequest.of(0, 10), 0);
+        when(workationService.getAllWorkations(any(GetWorkation.class), any(Pageable.class))).thenReturn(emptyPage);
 
         // Act & Assert
         mockMvc.perform(get("/workflex/workation")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(0)))
-                .andExpect(jsonPath("$", is(empty())));
+                .andExpect(jsonPath("$.content.length()").value(0))
+                .andExpect(jsonPath("$.content", is(empty())));
     }
 
     @Test
@@ -117,13 +128,16 @@ class WorkationControllerTest {
                 RiskLevel.LOW
         );
 
-        when(workationService.getAllWorkations(any(GetWorkation.class))).thenReturn(List.of(workation));
+        Page<WorkationDto> createdWorkation = new PageImpl<>(
+                List.of(workation), PageRequest.of(0, 10), 0);
+
+        when(workationService.getAllWorkations(any(GetWorkation.class), any(Pageable.class))).thenReturn(createdWorkation);
 
         // Act & Assert
         mockMvc.perform(get("/workflex/workation"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].startDate", is("25/12/2024")))
-                .andExpect(jsonPath("$[0].endDate", is("05/01/2025")));
+                .andExpect(jsonPath("$.content[0].startDate", is("25/12/2024")))
+                .andExpect(jsonPath("$.content[0].endDate", is("05/01/2025")));
     }
 
     @Test
@@ -136,21 +150,27 @@ class WorkationControllerTest {
         WorkationDto noRisk = createWorkationDto("3", "Employee 3", "Belgium", "Greece",
                 LocalDate.now(), LocalDate.now().plusDays(10), 8, RiskLevel.NO);
 
-        when(workationService.getAllWorkations(any(GetWorkation.class))).thenReturn(Arrays.asList(highRisk, lowRisk, noRisk));
+        Page<WorkationDto> createdWorkation = new PageImpl<>(
+                List.of(highRisk, lowRisk, noRisk), PageRequest.of(0, 10), 0);
+
+        when(workationService.getAllWorkations(any(GetWorkation.class), any(Pageable.class)))
+                .thenReturn(createdWorkation);
 
         // Act & Assert
         mockMvc.perform(get("/workflex/workation"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[0].riskLevel", is("HIGH")))
-                .andExpect(jsonPath("$[1].riskLevel", is("LOW")))
-                .andExpect(jsonPath("$[2].riskLevel", is("NO")));
+                .andExpect(jsonPath("$.content.length()").value(3))
+                .andExpect(jsonPath("$.content[0].riskLevel", is("HIGH")))
+                .andExpect(jsonPath("$.content[1].riskLevel", is("LOW")))
+                .andExpect(jsonPath("$.content[2].riskLevel", is("NO")));
     }
 
     @Test
     void getAll_shouldUseCorrectEndpoint() throws Exception {
         // Arrange
-        when(workationService.getAllWorkations(any(GetWorkation.class))).thenReturn(Collections.emptyList());
+        Page<WorkationDto> emptyPage = new PageImpl<>(
+                List.of(), PageRequest.of(0, 10), 0);
+        when(workationService.getAllWorkations(any(GetWorkation.class), any(Pageable.class))).thenReturn(emptyPage);
 
         // Act & Assert - verify correct endpoint
         mockMvc.perform(get("/workflex/workation"))
@@ -182,8 +202,10 @@ class WorkationControllerTest {
 
     @Test
     void returnCorrectWorkstationById() throws Exception {
+
+
         when(workationService.getWorkationById(Mockito.anyLong()))
-                .thenReturn(workations.get(0));
+                .thenReturn(workations.stream().toList().get(0));
 
         mockMvc.perform(get("/workflex/workation/1")).
                 andExpect(status().isOk());
@@ -242,14 +264,14 @@ class WorkationControllerTest {
     @Test
     void shouldReturnWorkationsFilteredByEmployee() throws Exception {
 
-        when(workationService.getAllWorkations(any(GetWorkation.class)))
+        when(workationService.getAllWorkations(any(GetWorkation.class), any(Pageable.class)))
                 .thenReturn(workations);
 
         mockMvc.perform(get("/workflex/workation")
                         .param("employee", "John Doe"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].workationId").value("1"))
-                .andExpect(jsonPath("$[0].employee").value("John Doe"));
+                .andExpect(jsonPath("$.content[0].workationId").value("1"))
+                .andExpect(jsonPath("$.content[0].employee").value("John Doe"));
     }
 
     @Test
