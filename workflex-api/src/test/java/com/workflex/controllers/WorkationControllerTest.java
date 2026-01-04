@@ -80,10 +80,12 @@ class WorkationControllerTest {
                 .thenReturn(workations);
 
         // Act & Assert
-        mockMvc.perform(get("/workflex/workation")
-                        .param("page", "0")
-                        .param("size", "10")
-                        .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(
+                        get("/workflex/workation")
+                                .param("page", "0")
+                                .param("size", "10")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content.length()").value(2))
@@ -224,7 +226,7 @@ class WorkationControllerTest {
     void returnCorrectWorkstationById() throws Exception {
 
         when(workationService
-                .getWorkationById(Mockito.anyLong()))
+                .getWorkationById(anyLong()))
                 .thenReturn(workations.getContent().get(0));
 
         mockMvc.perform(get("/workflex/workation/1")).
@@ -256,10 +258,12 @@ class WorkationControllerTest {
                   }
                 """;
 
-        mockMvc.perform(post("/workflex/workation")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json)
-        ).andExpect(status().isCreated());
+        mockMvc.perform(
+                        post("/workflex/workation")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json)
+                )
+                .andExpect(status().isCreated());
 
     }
 

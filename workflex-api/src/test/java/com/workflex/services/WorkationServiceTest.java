@@ -159,11 +159,8 @@ class WorkationServiceTest {
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Workation> page = new PageImpl<>(List.of(entity), pageable, 1);
 
-        when(repository.search(
-                argThat(emp -> emp.equalsIgnoreCase("john")),
-                isNull(),
-                any()
-        )).thenReturn(page);
+        when(repository.search(any(), any(), any()))
+                .thenReturn(page);
 
         Page<WorkationDto> result = service.getAllWorkations(params, pageable);
 

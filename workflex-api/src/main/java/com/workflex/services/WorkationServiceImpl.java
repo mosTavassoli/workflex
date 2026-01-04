@@ -3,6 +3,7 @@ package com.workflex.services;
 import com.workflex.domain.dtos.GetWorkationDto;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.domain.mappers.WorkationMapper;
+import com.workflex.domain.models.GetWorkation;
 import com.workflex.domain.models.Workation;
 import com.workflex.repositories.WorkationRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,9 +26,10 @@ public class WorkationServiceImpl implements WorkationService {
             GetWorkationDto params,
             Pageable pageable
     ) {
+        GetWorkation paramsEntity = mapper.toQueryModel(params);
         return repository.search(
-                params.getEmployee(),
-                params.getOriginCountry(),
+                paramsEntity.getEmployee(),
+                paramsEntity.getOriginCountry(),
                 pageable
         ).map(mapper::toDto);
     }

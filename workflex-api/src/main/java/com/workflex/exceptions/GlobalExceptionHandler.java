@@ -14,20 +14,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleNotFound(EntityNotFoundException ex) {
+    public ResponseEntity<ApiError> handleNotFound(
+            EntityNotFoundException ex,
+            HttpServletRequest request
+    ) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage());
+                .body(ApiError.of(
+                        HttpStatus.NOT_FOUND,
+                        ex.getMessage(),
+                        request.getRequestURI()
+                ));
     }
 
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidation(
+    public ResponseEntity<ValidationError> handleValidation(
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
         return ResponseEntity
                 .badRequest()
-                .body(ApiError.fromValidation(ex, request.getRequestURI()));
+                .body(ValidationError.from(ex, request.getRequestURI()));
     }
-
 }
