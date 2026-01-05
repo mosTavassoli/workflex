@@ -1,5 +1,6 @@
 package com.workflex.api.dto;
 
+import com.workflex.domain.enums.RiskLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,4 +19,5 @@ public class WorkationResponse {
     private String destinationCountry;
     private LocalDate startDate;
     private LocalDate endDate;
+    private RiskLevel riskLevel;
 }
