@@ -1,13 +1,14 @@
 package com.workflex.controllers;
 
+import com.workflex.domain.dtos.CreateWorkationRequest;
 import com.workflex.domain.dtos.GetWorkationDto;
+import com.workflex.domain.dtos.UpdateWorkationRequest;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.domain.enums.RiskLevel;
 import com.workflex.services.WorkationService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.Page;
@@ -248,7 +249,7 @@ class WorkationControllerTest {
         WorkationDto newWorkationDto =
                 WorkationDto.builder().id(10L).workationId("10").build();
 
-        when(workationService.createWorkation(any(WorkationDto.class)))
+        when(workationService.createWorkation(any(CreateWorkationRequest.class)))
                 .thenReturn(newWorkationDto);
 
         String json = """
@@ -303,7 +304,7 @@ class WorkationControllerTest {
         WorkationDto updatedWorkation =
                 WorkationDto.builder().id(1L).workationId("11").employee("John Doe 1").build();
 
-        when(workationService.updateWorkation(anyLong(), any(WorkationDto.class)))
+        when(workationService.updateWorkation(anyLong(), any(UpdateWorkationRequest.class)))
                 .thenReturn(updatedWorkation);
 
 
@@ -322,12 +323,12 @@ class WorkationControllerTest {
                 .andExpect(jsonPath("$.workationId").value("11"));
 
         verify(workationService)
-                .updateWorkation(eq(1L), any(WorkationDto.class));
+                .updateWorkation(eq(1L), any(UpdateWorkationRequest.class));
     }
 
     @Test
     void shouldReturnNotFoundExceptionIfIdNotFound() throws Exception {
-        when(workationService.updateWorkation(anyLong(), any(WorkationDto.class))).thenThrow(
+        when(workationService.updateWorkation(anyLong(), any(UpdateWorkationRequest.class))).thenThrow(
                 new EntityNotFoundException("Workation not found"));
 
         String json = """
@@ -341,7 +342,7 @@ class WorkationControllerTest {
                 .content(json)).andExpect(status().isNotFound());
 
         verify(workationService)
-                .updateWorkation(eq(100L), any(WorkationDto.class));
+                .updateWorkation(eq(100L), any(UpdateWorkationRequest.class));
     }
 
 }

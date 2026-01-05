@@ -1,5 +1,6 @@
 package com.workflex.services;
 
+import com.workflex.domain.dtos.CreateWorkationRequest;
 import com.workflex.domain.dtos.GetWorkationDto;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.domain.mappers.WorkationMapper;
@@ -115,7 +116,7 @@ class WorkationServiceTest {
 
     @Test
     void shouldCreateWorkation() {
-        WorkationDto dto = WorkationDto.builder()
+        CreateWorkationRequest dto = CreateWorkationRequest.builder()
                 .workationId("10")
                 .originCountry("ITALY")
                 .build();
