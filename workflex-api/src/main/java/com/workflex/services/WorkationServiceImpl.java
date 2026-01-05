@@ -1,6 +1,8 @@
 package com.workflex.services;
 
+import com.workflex.domain.dtos.CreateWorkationRequest;
 import com.workflex.domain.dtos.GetWorkationDto;
+import com.workflex.domain.dtos.UpdateWorkationRequest;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.domain.mappers.WorkationMapper;
 import com.workflex.domain.models.GetWorkation;
@@ -44,7 +46,7 @@ public class WorkationServiceImpl implements WorkationService {
     }
 
     @Override
-    public WorkationDto createWorkation(WorkationDto body) {
+    public WorkationDto createWorkation(CreateWorkationRequest body) {
         return mapper.toDto(
                 repository.save(
                         mapper.toEntity(body)
@@ -53,7 +55,7 @@ public class WorkationServiceImpl implements WorkationService {
     }
 
     @Override
-    public WorkationDto updateWorkation(Long id, WorkationDto body) {
+    public WorkationDto updateWorkation(Long id, UpdateWorkationRequest body) {
         Workation entity = repository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() ->
                         new EntityNotFoundException(
@@ -61,7 +63,7 @@ public class WorkationServiceImpl implements WorkationService {
                         )
                 );
 
-        mapper.updateEntityFromDto(body, entity);
+        mapper.updateEntityFromRequest(body, entity);
         return mapper.toDto(entity);
     }
 

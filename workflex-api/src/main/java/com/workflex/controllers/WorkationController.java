@@ -1,6 +1,8 @@
 package com.workflex.controllers;
 
+import com.workflex.domain.dtos.CreateWorkationRequest;
 import com.workflex.domain.dtos.GetWorkationDto;
+import com.workflex.domain.dtos.UpdateWorkationRequest;
 import com.workflex.domain.dtos.WorkationDto;
 import com.workflex.services.WorkationService;
 import jakarta.validation.Valid;
@@ -37,7 +39,7 @@ public class WorkationController {
 
     @PostMapping
     public ResponseEntity<WorkationDto> createWorkation(
-            @Valid @RequestBody WorkationDto body
+            @Valid @RequestBody CreateWorkationRequest body
     ) {
         WorkationDto created =
                 workationService.createWorkation(body);
@@ -48,7 +50,7 @@ public class WorkationController {
     @PutMapping("/{id}")
     public ResponseEntity<WorkationDto> updateWorkation(
             @PathVariable Long id,
-            @Valid @RequestBody WorkationDto body) {
+            @Valid @RequestBody UpdateWorkationRequest body) {
         WorkationDto updated =
                 workationService.updateWorkation(id, body);
         return ResponseEntity.ok(updated);
