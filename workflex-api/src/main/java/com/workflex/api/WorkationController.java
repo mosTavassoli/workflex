@@ -41,6 +41,7 @@ public class WorkationController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public WorkationResponse create(
             @Valid @RequestBody CreateWorkationRequest body
     ) {
@@ -50,6 +51,7 @@ public class WorkationController {
     }
 
     @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public WorkationResponse update(
             @PathVariable Long id,
             @Valid @RequestBody UpdateWorkationRequest body
