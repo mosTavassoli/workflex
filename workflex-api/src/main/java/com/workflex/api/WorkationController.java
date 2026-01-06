@@ -34,7 +34,7 @@ public class WorkationController {
     }
 
     @GetMapping("/{id}")
-    public WorkationResponse getById(@PathVariable String id) {
+    public WorkationResponse getById(@PathVariable Long id) {
         Workation response = service.getById(id);
 
         return mapper.toResponse(response);
@@ -51,7 +51,7 @@ public class WorkationController {
 
     @PatchMapping("/{id}")
     public WorkationResponse update(
-            @PathVariable String id,
+            @PathVariable Long id,
             @Valid @RequestBody UpdateWorkationRequest body
     ) {
         Workation response = service.update(id, body);
@@ -61,7 +61,7 @@ public class WorkationController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable String id) {
+    public void delete(@PathVariable Long id) {
         service.delete(id);
     }
 }

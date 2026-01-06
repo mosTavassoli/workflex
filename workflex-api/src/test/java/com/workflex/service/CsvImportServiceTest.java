@@ -1,6 +1,6 @@
-package com.workflex.services;
+package com.workflex.service;
 
-import com.workflex.repositories.WorkationRepository;
+import com.workflex.persistence.WorkationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

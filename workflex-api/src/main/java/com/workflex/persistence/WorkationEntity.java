@@ -1,6 +1,5 @@
 package com.workflex.persistence;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.workflex.domain.enums.RiskLevel;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +10,6 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "workations")
 public class WorkationEntity {
@@ -31,10 +29,7 @@ public class WorkationEntity {
     @Column(name = "destination")
     private String destinationCountry;
 
-    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate startDate;
-
-    @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate endDate;
 
     private Integer workingDays;

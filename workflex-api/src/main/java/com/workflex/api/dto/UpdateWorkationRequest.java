@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 import java.time.LocalDate;
 
 @Data
@@ -13,5 +14,6 @@ import java.time.LocalDate;
 @Builder
 public class UpdateWorkationRequest {
     private String destinationCountry;
+    private LocalDate startDate;
     private LocalDate endDate;
 }

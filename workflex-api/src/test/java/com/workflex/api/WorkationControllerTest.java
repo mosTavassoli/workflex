@@ -6,7 +6,7 @@ import com.workflex.domain.Workation;
 import com.workflex.mapper.WorkationApiMapper;
 import com.workflex.service.WorkationService;
 
-import static com.workflex.utils.WorkationTestSupport.BASE_URL;
+import static com.workflex.support.WorkationTestSupport.BASE_URL;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -42,11 +43,12 @@ public class WorkationControllerTest {
     @Test
     void search_shouldReturnPagedWorkations() throws Exception {
         Workation domain =
-                Workation.builder()
-                        .id("10L")
-                        .employee("john")
-                        .originCountry("ITALY")
-                        .build();
+                Workation.create("john",
+                        "IYALY",
+                        "Germany",
+                        LocalDate.now(),
+                        LocalDate.now()
+                );
 
         WorkationResponse response =
                 WorkationResponse.builder().id("10L")

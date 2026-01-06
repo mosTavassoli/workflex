@@ -1,10 +1,11 @@
-package com.workflex.services;
+package com.workflex.service;
 
 import com.opencsv.CSVReaderHeaderAware;
 import com.opencsv.exceptions.CsvValidationException;
 import com.workflex.domain.enums.RiskLevel;
-import com.workflex.domain.models.Workation;
-import com.workflex.repositories.WorkationRepository;
+
+import com.workflex.persistence.WorkationEntity;
+import com.workflex.persistence.WorkationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -33,11 +34,11 @@ public class CsvImportService {
         try (var is = new ClassPathResource("workations.csv").getInputStream();
              var reader = new CSVReaderHeaderAware(new InputStreamReader(is))) {
 
-            List<Workation> buffer = new ArrayList<>();
+            List<WorkationEntity> buffer = new ArrayList<>();
             Map<String, String> row;
 
             while ((row = reader.readMap()) != null) {
-                Workation w = mapRow(row);
+                WorkationEntity w = mapRow(row);
                 buffer.add(w);
             }
 
@@ -50,29 +51,18 @@ public class CsvImportService {
         }
     }
 
-    private Workation mapRow(Map<String, String> row) {
-        // CSV headers exactly as provided:
-        // workationId,employee,origin,destination,start,end,workingDays,risk
-        String workationId = row.get("workationId");
-        String employee = row.get("employee");
-        String origin = row.get("origin");
-        String destination = row.get("destination");
-        LocalDate startDate = LocalDate.parse(row.get("start")); // yyyy-MM-dd
-        LocalDate endDate = LocalDate.parse(row.get("end"));   // yyyy-MM-dd
-        Integer workingDays = Integer.parseInt(row.get("workingDays"));
+    private WorkationEntity mapRow(Map<String, String> row) {
+        WorkationEntity w = new WorkationEntity();
 
-        // risk: HIGH | LOW | NO
-        RiskLevel riskLevel = RiskLevel.valueOf(row.get("risk").toUpperCase());
+        w.setWorkationId(row.get("workationId"));
+        w.setEmployee(row.get("employee"));
+        w.setOriginCountry(row.get("origin"));
+        w.setDestinationCountry(row.get("destination"));
+        w.setStartDate(LocalDate.parse(row.get("start")));
+        w.setEndDate(LocalDate.parse(row.get("end")));
+        w.setWorkingDays(Integer.parseInt(row.get("workingDays")));
+        w.setRiskLevel(RiskLevel.valueOf(row.get("risk").toUpperCase()));
 
-        return Workation.builder()
-                .workationId(workationId)
-                .employee(employee)
-                .originCountry(origin)
-                .destinationCountry(destination)
-                .startDate(startDate)
-                .endDate(endDate)
-                .workingDays(workingDays)
-                .riskLevel(riskLevel)
-                .build();
+        return w;
     }
-}
+};

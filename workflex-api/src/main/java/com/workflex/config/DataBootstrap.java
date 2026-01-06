@@ -1,7 +1,7 @@
 package com.workflex.config;
 
 
-import com.workflex.services.CsvImportService;
+import com.workflex.service.CsvImportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;

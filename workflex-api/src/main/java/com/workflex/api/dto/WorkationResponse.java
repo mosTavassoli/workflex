@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Builder
 public class WorkationResponse {
     private String id;
+    private String workationId;
     private String employee;
     private String originCountry;
     private String destinationCountry;

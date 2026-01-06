@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class PagedResponse<T> {
     private PageMeta page;
 
     public static <T> PagedResponse<T> from(
-            org.springframework.data.domain.Page<?> springPage,
+            Page<?> springPage,
             List<T> data
     ) {
         return PagedResponse.<T>builder()

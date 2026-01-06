@@ -9,13 +9,13 @@ import org.springframework.data.domain.Pageable;
 
 public interface WorkationService {
 
-    Workation create(CreateWorkationRequest command);
+    Workation create(CreateWorkationRequest body);
 
-    Workation getById(String id);
+    Workation getById(Long id);
 
     Page<Workation> search(WorkationSearchParams params, Pageable pageable);
 
-    Workation update(String id, UpdateWorkationRequest command);
+    Workation update(Long id, UpdateWorkationRequest body);
 
-    void delete(String id);
+    void delete(Long id);
 }
