@@ -1,9 +1,9 @@
 package com.workflex.Integrations;
 
 
-import com.workflex.domain.models.Workation;
-import com.workflex.repositories.WorkationRepository;
-import com.workflex.services.CsvImportService;
+import com.workflex.persistence.WorkationEntity;
+import com.workflex.persistence.WorkationRepository;
+import com.workflex.service.CsvImportService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +24,7 @@ public class CsvImportServiceIntegrationTest {
 
         service.importIfEmpty();
 
-        List<Workation> all = repository.findAll();
+        List<WorkationEntity> all = repository.findAll();
         assertThat(all).hasSize(5);
         assertThat(all.get(0).getEmployee()).isEqualTo("Steffen Jacobs");
     }
